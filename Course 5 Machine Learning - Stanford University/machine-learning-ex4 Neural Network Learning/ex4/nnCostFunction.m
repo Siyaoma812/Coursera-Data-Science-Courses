@@ -86,11 +86,15 @@ Theta2_grad = zeros(size(Theta2));
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
-
-z2 = Theta1_grad(:)*X;
+a1 = [ones(m, 1) X]
+z2 = a1*Theta1_grad(:);
 a2 = sigmoid(z2);
-z3 = Theta2_grad(:)*a2;
+m2 = size(a2, 1);
+a2 = [ones(m2, 1) a2];
+z3 = a2*Theta2_grad(:);
 a3 = sigmoid(z3);
+m3 = size(a3, 1);
+a3 = [ones(m3, 1) a3];
 a = [X; a2; a3];
 h = log(a);
 g = log(1-a);
