@@ -85,24 +85,55 @@ Theta2_grad = zeros(size(Theta2));
 % =========================================================================
 
 % Unroll gradients
-grad = [Theta1_grad(:) ; Theta2_grad(:)];
-a1 = [ones(m, 1) X]
-z2 = a1*Theta1_grad(:);
+a1 = [ones(m, 1) X];
+z2 = a1 * Theta1';
 a2 = sigmoid(z2);
 m2 = size(a2, 1);
 a2 = [ones(m2, 1) a2];
-z3 = a2*Theta2_grad(:);
+z3 = a2 * Theta2';
 a3 = sigmoid(z3);
-m3 = size(a3, 1);
-a3 = [ones(m3, 1) a3];
-a = [X; a2; a3];
-h = log(a);
-g = log(1-a);
-I = sum ((y.*h)+((1-y).*g));
-J = (-1/m)*I;
+
+y1 = zeros(m, num_labels); %recode the labels as vectors containing only values 0 or 1
+
+for i = 1:m
+  y1(i, y(i)) = 1;
+end
+
+h = log(a3);
+g = log(1-a3);
+
+I = sum ((y1.*h)+((1-y1).*g));
+r = (sum (sum(Theta1(:, 2:end).^2)) + sum (sum(Theta2(:, 2:end).^2)))* (lambda/(2*m));
+J = (-1/m)*sum(I)+r;
 
 
 
+for t = 1:m
+
+  a1 = [1; X(t,:)'];
+  z2 = Theta1*a1;
+  a2 = [1; sigmoid(z2)];
+  z3 = Theta2*a2;
+  a3 = sigmoid(z3);
+
+  yy = ([1:num_labels]==y(t))'; %indicate whether the current training example belongs to class k (yk = 1), or if it belongs to a differnt class (yk = 0)
+  delta3 = a3 - yy;
+
+  delta2 = (Theta2' * delta3).* [1; sigmoidGradient(z2)];
+
+  delta2 = delta2(2:end);
+
+  Theta1_grad = Theta1_grad + delta2 * a1';
+  Theta2_grad = Theta2_grad + delta3 * a2';
+
+ end
+
+Theta1_grad = (1/m)*Theta1_grad + (lambda/m)*[zeros(size(Theta1, 1), 1) Theta1(:, 2:end)];
+Theta2_grad = (1/m)*Theta2_grad + (lambda/m)*[zeros(size(Theta2, 1), 1) Theta2(:, 2:end)];
+
+grad = [Theta1_grad(:); Theta2_grad(:)];
+
+  
 
 
 
