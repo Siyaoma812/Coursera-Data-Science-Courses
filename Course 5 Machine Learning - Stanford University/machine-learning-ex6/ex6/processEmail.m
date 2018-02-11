@@ -100,10 +100,21 @@ while ~isempty(email_contents)
 
 
 
+    idx = strmatch(str, vocabList, 'exact');
+    if ~isempty(idx)
+        word_indices = [word_indices; idx];
+    end
 
-
-
-
+    %m = length (vocabList);
+    
+    %j = 1;
+    
+    %for j= 1:m
+      %if (strcmp(str, vocabList(j)) == 1)
+        %word_indices = [word_indices; i];
+      %end
+      
+    %end
 
 
     % =============================================================
@@ -116,6 +127,8 @@ while ~isempty(email_contents)
     end
     fprintf('%s ', str);
     l = l + length(str) + 1;
+    
+    
 
 end
 
